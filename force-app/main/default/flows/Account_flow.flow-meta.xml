@@ -2,6 +2,38 @@
 <Flow xmlns="http://soap.sforce.com/2006/04/metadata" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
     <apiVersion>50.0</apiVersion>
     <assignments>
+        <name>Assign_No_Save_Text</name>
+        <label>Assign No Save Text</label>
+        <locationX>314</locationX>
+        <locationY>1214</locationY>
+        <assignmentItems>
+            <assignToReference>Final_Text</assignToReference>
+            <operator>Assign</operator>
+            <value>
+                <stringValue>No records have been saved. See you!</stringValue>
+            </value>
+        </assignmentItems>
+        <connector>
+            <targetReference>Display_Final_Text</targetReference>
+        </connector>
+    </assignments>
+    <assignments>
+        <name>Assign_OppId</name>
+        <label>Assign OppId</label>
+        <locationX>138</locationX>
+        <locationY>1454</locationY>
+        <assignmentItems>
+            <assignToReference>Product_Loop.OpportunityId</assignToReference>
+            <operator>Assign</operator>
+            <value>
+                <elementReference>varOpportunity.Id</elementReference>
+            </value>
+        </assignmentItems>
+        <connector>
+            <targetReference>Create_Product</targetReference>
+        </connector>
+    </assignments>
+    <assignments>
         <name>Assign_Opportunity</name>
         <label>Assign Opportunity</label>
         <locationX>182</locationX>
@@ -28,7 +60,39 @@
             </value>
         </assignmentItems>
         <connector>
-            <targetReference>Create_Opportunity</targetReference>
+            <targetReference>Products_Screen</targetReference>
+        </connector>
+    </assignments>
+    <assignments>
+        <name>Assign_Success_Text</name>
+        <label>Assign Success Text</label>
+        <locationX>50</locationX>
+        <locationY>1790</locationY>
+        <assignmentItems>
+            <assignToReference>Final_Text</assignToReference>
+            <operator>Assign</operator>
+            <value>
+                <stringValue>The records have been successfully saved</stringValue>
+            </value>
+        </assignmentItems>
+        <connector>
+            <targetReference>Display_Final_Text</targetReference>
+        </connector>
+    </assignments>
+    <assignments>
+        <name>dq</name>
+        <label>dq</label>
+        <locationX>182</locationX>
+        <locationY>854</locationY>
+        <assignmentItems>
+            <assignToReference>Opportunity_Products</assignToReference>
+            <operator>Add</operator>
+            <value>
+                <elementReference>Products_Page.Products</elementReference>
+            </value>
+        </assignmentItems>
+        <connector>
+            <targetReference>Screen_Save_Data</targetReference>
         </connector>
     </assignments>
     <decisions>
@@ -37,7 +101,7 @@
         <locationX>182</locationX>
         <locationY>158</locationY>
         <defaultConnector>
-            <targetReference>wef</targetReference>
+            <targetReference>Opportunity_Screen</targetReference>
         </defaultConnector>
         <defaultConnectorLabel>Default Outcome</defaultConnectorLabel>
         <rules>
@@ -53,6 +117,31 @@
             <label>Has No Account</label>
         </rules>
     </decisions>
+    <decisions>
+        <name>If_Save_Records</name>
+        <label>If Save Records</label>
+        <locationX>182</locationX>
+        <locationY>1094</locationY>
+        <defaultConnector>
+            <targetReference>Assign_No_Save_Text</targetReference>
+        </defaultConnector>
+        <defaultConnectorLabel>Default Outcome</defaultConnectorLabel>
+        <rules>
+            <name>Save_Records</name>
+            <conditionLogic>and</conditionLogic>
+            <conditions>
+                <leftValueReference>Is_Save</leftValueReference>
+                <operator>EqualTo</operator>
+                <rightValue>
+                    <booleanValue>true</booleanValue>
+                </rightValue>
+            </conditions>
+            <connector>
+                <targetReference>Create_Opportunity</targetReference>
+            </connector>
+            <label>Save Records</label>
+        </rules>
+    </decisions>
     <dynamicChoiceSets>
         <name>Stage_Values</name>
         <dataType>Picklist</dataType>
@@ -63,6 +152,20 @@
     </dynamicChoiceSets>
     <interviewLabel>Account flow {!$Flow.CurrentDateTime}</interviewLabel>
     <label>Account flow</label>
+    <loops>
+        <name>Product_Loop</name>
+        <label>Assign OppId In Products</label>
+        <locationX>50</locationX>
+        <locationY>1334</locationY>
+        <collectionReference>Opportunity_Products</collectionReference>
+        <iterationOrder>Asc</iterationOrder>
+        <nextValueConnector>
+            <targetReference>Assign_OppId</targetReference>
+        </nextValueConnector>
+        <noMoreValuesConnector>
+            <targetReference>Assign_Success_Text</targetReference>
+        </noMoreValuesConnector>
+    </loops>
     <processMetadataValues>
         <name>BuilderType</name>
         <value>
@@ -85,12 +188,22 @@
     <recordCreates>
         <name>Create_Opportunity</name>
         <label>Create Opportunity</label>
-        <locationX>182</locationX>
-        <locationY>734</locationY>
+        <locationX>50</locationX>
+        <locationY>1214</locationY>
         <connector>
-            <targetReference>ewvfb</targetReference>
+            <targetReference>Product_Loop</targetReference>
         </connector>
         <inputReference>varOpportunity</inputReference>
+    </recordCreates>
+    <recordCreates>
+        <name>Create_Product</name>
+        <label>Create Product</label>
+        <locationX>138</locationX>
+        <locationY>1574</locationY>
+        <connector>
+            <targetReference>Product_Loop</targetReference>
+        </connector>
+        <inputReference>Product_Loop</inputReference>
     </recordCreates>
     <screens>
         <name>Account_Screen</name>
@@ -114,16 +227,16 @@
         <showHeader>true</showHeader>
     </screens>
     <screens>
-        <name>ewvfb</name>
-        <label>ewvfb</label>
+        <name>Display_Final_Text</name>
+        <label>Display Final Text</label>
         <locationX>182</locationX>
-        <locationY>854</locationY>
+        <locationY>2006</locationY>
         <allowBack>true</allowBack>
         <allowFinish>true</allowFinish>
         <allowPause>true</allowPause>
         <fields>
-            <name>kfew</name>
-            <fieldText>&lt;p&gt;opp={!varOpportunity.Id}&lt;/p&gt;</fieldText>
+            <name>Final_Text_Label</name>
+            <fieldText>&lt;p&gt;{!Final_Text}&lt;/p&gt;</fieldText>
             <fieldType>DisplayText</fieldType>
         </fields>
         <showFooter>true</showFooter>
@@ -174,20 +287,51 @@
         <showHeader>true</showHeader>
     </screens>
     <screens>
-        <name>wef</name>
-        <label>wef</label>
-        <locationX>314</locationX>
-        <locationY>278</locationY>
+        <name>Products_Screen</name>
+        <label>Products Screen</label>
+        <locationX>182</locationX>
+        <locationY>734</locationY>
         <allowBack>true</allowBack>
         <allowFinish>true</allowFinish>
         <allowPause>true</allowPause>
         <connector>
-            <targetReference>Opportunity_Screen</targetReference>
+            <targetReference>dq</targetReference>
         </connector>
         <fields>
-            <name>dipsfw</name>
-            <fieldText>&lt;p&gt;wf = {!varAccountId}&lt;/p&gt;</fieldText>
+            <name>Products_Page</name>
+            <extensionName>c:productsCreation</extensionName>
+            <fieldType>ComponentInstance</fieldType>
+            <isRequired>true</isRequired>
+            <storeOutputAutomatically>true</storeOutputAutomatically>
+        </fields>
+        <showFooter>true</showFooter>
+        <showHeader>true</showHeader>
+    </screens>
+    <screens>
+        <name>Screen_Save_Data</name>
+        <label>Screen Save Data</label>
+        <locationX>182</locationX>
+        <locationY>974</locationY>
+        <allowBack>true</allowBack>
+        <allowFinish>true</allowFinish>
+        <allowPause>true</allowPause>
+        <connector>
+            <targetReference>If_Save_Records</targetReference>
+        </connector>
+        <fields>
+            <name>Label_Save</name>
+            <fieldText>&lt;p&gt;Save all entered data?&lt;/p&gt;</fieldText>
             <fieldType>DisplayText</fieldType>
+        </fields>
+        <fields>
+            <name>Is_Save</name>
+            <dataType>Boolean</dataType>
+            <defaultValue>
+                <booleanValue>true</booleanValue>
+            </defaultValue>
+            <fieldText>Save</fieldText>
+            <fieldType>InputField</fieldType>
+            <isRequired>true</isRequired>
         </fields>
         <showFooter>true</showFooter>
         <showHeader>true</showHeader>
@@ -199,7 +343,22 @@
             <targetReference>Account_Present</targetReference>
         </connector>
     </start>
-    <status>Draft</status>
+    <status>Active</status>
+    <variables>
+        <name>Final_Text</name>
+        <dataType>String</dataType>
+        <isCollection>false</isCollection>
+        <isInput>true</isInput>
+        <isOutput>true</isOutput>
+    </variables>
+    <variables>
+        <name>Opportunity_Products</name>
+        <dataType>SObject</dataType>
+        <isCollection>true</isCollection>
+        <isInput>true</isInput>
+        <isOutput>true</isOutput>
+        <objectType>OpportunityLineItem</objectType>
+    </variables>
     <variables>
         <name>varAccountId</name>
         <dataType>String</dataType>
