@@ -59,6 +59,13 @@
                 <elementReference>Closed_Date</elementReference>
             </value>
         </assignmentItems>
+        <assignmentItems>
+            <assignToReference>varOpportunity.AccountId</assignToReference>
+            <operator>Assign</operator>
+            <value>
+                <elementReference>varAccountId</elementReference>
+            </value>
+        </assignmentItems>
         <connector>
             <targetReference>Products_Screen</targetReference>
         </connector>
