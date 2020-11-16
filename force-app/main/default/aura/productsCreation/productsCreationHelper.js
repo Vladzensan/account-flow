@@ -9,31 +9,18 @@
     },
 
     initProduct: function(component) {
-        let getProductAction = component.get("c.createProduct");
-        getProductAction.setCallback(this, function(response) {
-            let state = response.getState();
-            if(state === "SUCCESS") {
-                component.set("v.Product", response.getReturnValue());
-            }
-            else{
-                console.log("Failed with state: " + state);
-            }
-        });
-        $A.enqueueAction(getProductAction);
+        var newProduct = {
+            'sobjectType': 'OpportunityLineItem',
+            'Name': ''
+        };
+
+        component.set("v.Product", newProduct);
     },
 
     initListProducts: function(component) {
-        let getListAction = component.get("c.createListProducts");
-        getListAction.setCallback(this, function(response) {
-            let state = response.getState();
-            if(state === "SUCCESS") {
-                component.set("v.Products", response.getReturnValue());
-            }
-            else{
-                console.log("Failed with state: " + state);
-            }
-        });
-        $A.enqueueAction(getListAction);
+        var newProducts = [];
+
+        component.set("v.Products", newProducts);
     },
 
     addProduct: function(component) {
