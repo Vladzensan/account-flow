@@ -23,36 +23,30 @@
         component.set("v.Products", newProducts);
     },
 
+    initPriceBookEntries: function(component) {
+        let getEntriesAction = component.get("c.getPricebookEntries");
+        getEntriesAction.setCallback(this, function(response) {
+            let state = response.getState();
+
+            if (state === "SUCCESS") {
+                component.set("v.priceEntries", response.getReturnValue());
+                component.set("v.selectedEntry", (response.getReturnValue())[0].Id)
+            }
+        });
+        $A.enqueueAction(getEntriesAction); 
+    },
+
     addProduct: function(component) {
         let product = component.get("v.Product");
         let products = component.get("v.Products");
         component.set("v.isEmpty", false);
 
-        let getPriceBookAction = component.get("c.getPricebookEntry");
-        getPriceBookAction.setCallback(this, function(response) {
-            let state = response.getState();
-            if(state === "SUCCESS") {
+        const selectedEntry = component.get("v.selectedEntry");
+        product.PricebookEntryId = selectedEntry;
 
-                product.PricebookEntryId = response.getReturnValue().Id;
-
-                products.push(product);
-                component.set("v.Products", products);
-
-                let getProductAction = component.get("c.createProduct");
-                getProductAction.setCallback(this, function(response) {
-                    let state = response.getState();
-                    if(state === "SUCCESS") {
-                        component.set("v.Product", response.getReturnValue());
-                    }
-                });
-                $A.enqueueAction(getProductAction);
-            }
-            else{
-                console.log("Failed with state: " + state);
-            }
-        });
-
-        $A.enqueueAction(getPriceBookAction);
+        products.push(product);
+        this.initProduct(component);
+        
     },
 
     deleteProduct: function(component, event) {

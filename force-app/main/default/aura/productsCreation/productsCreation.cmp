@@ -3,12 +3,21 @@
     <aura:attribute name="Product" type="OpportunityLineItem" default=""/>
     <aura:attribute name="Products" type="OpportunityLineItem[]" default="" access="global"/>
     <aura:attribute name="columns" type="List"/>
+    <aura:attribute name="priceEntries" type="PricebookEntry[]" default="" access="global"/>
+    <aura:attribute name="selectedEntry" type="PricebookEntry" default="" access="global"/>
     <aura:attribute name="isEmpty" type="Boolean" default="True"/>
 
     <aura:handler  name="init" value="{!this}" action="{!c.doInit}"/>
 
     <lightning:card title="Create Product">
-        <!--max 100.000$ and 1000 quantity-->
+        <lightning:select name="entries" label="Choose pricebook entry" 
+                        required="true" 
+                        value="{!v.selectedEntry}">
+        <aura:iteration items="{!v.priceEntries}" var="Entry">
+          <option value="{!Entry.Id}">{!Entry.Name}</option>
+        </aura:iteration>
+      </lightning:select>
+
         <lightning:input aura:id="field" label="Product Name" 
                         value="{!v.Product.Name}" required="true"/>
         <lightning:input aura:id="field" type="number" 
