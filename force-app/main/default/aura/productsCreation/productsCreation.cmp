@@ -4,19 +4,12 @@
     <aura:attribute name="Products" type="OpportunityLineItem[]" default="" access="global"/>
     <aura:attribute name="columns" type="List"/>
     <aura:attribute name="priceEntries" type="PricebookEntry[]" default="" access="global"/>
-    <aura:attribute name="selectedEntry" type="PricebookEntry" default="" access="global"/>
+    <aura:attribute name="selectedEntry" type="String" default="" access="global"/>
     <aura:attribute name="isEmpty" type="Boolean" default="True"/>
 
     <aura:handler  name="init" value="{!this}" action="{!c.doInit}"/>
 
     <lightning:card title="Create Product">
-        <lightning:select name="entries" label="Choose pricebook entry" 
-                        required="true" 
-                        value="{!v.selectedEntry}">
-        <aura:iteration items="{!v.priceEntries}" var="Entry">
-          <option value="{!Entry.Id}">{!Entry.Name}</option>
-        </aura:iteration>
-      </lightning:select>
 
         <lightning:input aura:id="field" label="Product Name" 
                         value="{!v.Product.Name}" required="true"/>
